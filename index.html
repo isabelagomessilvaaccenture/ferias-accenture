@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestao de Ferias - Accenture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,system-ui,sans-serif;background:#f1f5f9;padding:16px;}
+.container{max-width:1150px;margin:0 auto;}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.title{font-size:22px;font-weight:900;color:#111827;}
+.proj-btn{padding:7px 22px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:700;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-left:8px;}
+.panel{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 6px rgba(0,0,0,.08);}
+.panel-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.proj-label{color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;margin-right:8px;font-weight:700;}
+.proj-title{font-size:16px;font-weight:800;color:#111827;}
+.proj-sub{font-size:11px;color:#9ca3af;margin-top:2px;}
+.month-nav{display:flex;gap:3px;align-items:center;flex-wrap:wrap;}
+.month-btn{padding:4px 7px;border-radius:7px;border:1px solid #e5e7eb;background:#f3f4f6;color:#374151;font-size:10px;cursor:pointer;font-weight:600;}
+.nav-btn{padding:4px 9px;border-radius:7px;border:1px solid #e5e7eb;background:#f3f4f6;color:#374151;font-size:11px;cursor:pointer;font-weight:600;}
+.tabs{display:flex;gap:2px;border-bottom:2px solid #e5e7eb;margin-bottom:10px;}
+.tab-btn{padding:5px 14px;border:none;background:none;cursor:pointer;font-size:12px;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.filters{display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;}
+.filter-input{flex:1;min-width:160px;padding:6px 10px;border-radius:7px;border:1px solid #d1d5db;font-size:12px;outline:none;}
+.tower-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.tower-pill{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;}
+.gantt-wrap{overflow-x:auto;}
+.day-header{display:flex;border-bottom:2px solid #e5e7eb;background:#fff;position:sticky;top:0;z-index:10;}
+.day-cell{flex-shrink:0;text-align:center;font-size:9px;font-weight:600;border-left:1px solid #f0f0f0;padding:3px 0;}
+.tower-hdr{display:flex;align-items:center;background:#f8fafc;border-bottom:1px solid #e5e7eb;border-top:1px solid #e5e7eb;height:22px;}
+.member-row{display:flex;align-items:center;border-bottom:1px solid #f5f5f5;height:28px;}
+.member-label{flex-shrink:0;padding-right:6px;padding-left:14px;overflow:hidden;}
+.member-eid{font-weight:500;font-size:11px;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.day-row{display:flex;position:relative;flex:1;height:28px;align-items:center;}
+.day-slot{flex-shrink:0;height:28px;border-left:1px solid #f5f5f5;}
+.vac-bar{position:absolute;height:14px;top:7px;border-radius:3px;opacity:.88;cursor:pointer;z-index:2;display:flex;align-items:center;padding-left:3px;overflow:hidden;}
+.vac-lbl{font-size:8px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.counter-row{display:flex;border-top:2px solid #e5e7eb;margin-top:4px;}
+.counter-cell{flex-shrink:0;text-align:center;font-size:9px;font-weight:700;padding:3px 0;}
+.tooltip{position:fixed;background:#1f2937;color:#fff;border-radius:8px;padding:8px 12px;font-size:11px;z-index:9999;pointer-events:none;white-space:pre-line;line-height:1.6;box-shadow:0 4px 12px rgba(0,0,0,.3);display:none;}
+.risk-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:6px 12px;margin-bottom:8px;font-size:11px;}
+.list-item{border:1px solid #e5e7eb;border-radius:9px;padding:10px;margin-bottom:8px;background:#fafafa;}
+.badge{font-size:9px;font-weight:700;color:#fff;border-radius:4px;padding:1px 5px;}
+.vac-tag{display:inline-flex;align-items:center;gap:4px;background:#fff;border-radius:5px;padding:2px 8px;font-size:10px;margin:2px;border-width:1.5px;border-style:solid;}
+.overlap-tag{background:#fff7ed;border:1px solid #fed7aa;border-radius:5px;padding:2px 8px;font-size:10px;color:#92400e;display:inline-block;margin:2px;}
+.export-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:2000;}
+.export-modal.open{display:flex;}
+.export-box{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:620px;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+textarea{width:100%;height:300px;font-family:monospace;font-size:11px;border:1px solid #d1d5db;border-radius:8px;padding:10px;resize:none;outline:none;background:#f9fafb;box-sizing:border-box;}
+.btn{padding:8px 20px;border-radius:7px;border:none;font-weight:700;cursor:pointer;background:#4f46e5;color:#fff;}
+.btn-export{margin-top:6px;padding:5px 14px;border-radius:7px;border:1px solid #d1d5db;background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">&#127958; Gestao de Ferias</div>
+    <div style="display:flex;gap:6px;">
+      <button class="proj-btn" id="btn-daimler" onclick="switchProject('Daimler')" style="background:#0ea5e9;color:#fff;">Daimler</button>
+      <button class="proj-btn" id="btn-diebold" onclick="switchProject('Diebold')" style="background:#e2e8f0;color:#64748b;">Diebold</button>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="proj-title"><span class="proj-label" id="proj-label"></span><span id="proj-count"></span> colaboradores</div>
+        <div class="proj-sub" id="proj-sub"></div>
+        <button class="btn-export" onclick="openExport()">&#128203; Exportar para Excel</button>
+      </div>
+      <div class="month-nav" id="month-nav"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn" id="tab-gantt" onclick="switchTab('gantt')">&#128202; Gantt</button>
+      <button class="tab-btn" id="tab-list" onclick="switchTab('list')">&#128203; Lista</button>
+    </div>
+    <div class="filters">
+      <input class="filter-input" id="filter-input" placeholder="&#128269; Enterprise ID..." oninput="render()">
+      <div class="tower-pills" id="tower-pills"></div>
+      <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:#6b7280;cursor:pointer;">
+        <input type="checkbox" id="only-scheduled" onchange="render()"> So com ferias no mes
+      </label>
+    </div>
+    <div id="gantt-view"></div>
+    <div id="list-view" style="display:none;max-height:520px;overflow-y:auto;"></div>
+  </div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+<div class="export-modal" id="export-modal">
+  <div class="export-box">
+    <div style="font-weight:700;font-size:15px;margin-bottom:8px;">Exportar dados</div>
+    <div style="font-size:12px;color:#6b7280;margin-bottom:12px;">Clique na area, Ctrl+A, Ctrl+C e cole no Excel.</div>
+    <textarea id="export-text" onclick="this.select()"></textarea>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+      <button class="btn" onclick="closeExport()">Fechar</button>
+    </div>
+  </div>
+</div>
+<script>
+var DAIMLER = [
+  {eid:"alberto.cesar.santos",tower:"OTC CM",vacations:[["2026-05-04","2026-05-18"],["2026-08-17","2026-08-21"],["2026-09-15","2026-09-24"]]},
+  {eid:"armando.gomes.d.neto",tower:"OTC CM",vacations:[]},
+  {eid:"brenno.victor.silva",tower:"PTP",vacations:[["2026-07-08","2026-07-22"],["2026-11-05","2026-11-19"]]},
+  {eid:"bruno.luiz.e.pedrosa",tower:"OTC",vacations:[["2026-09-08","2026-09-22"]]},
+  {eid:"claudionei.andrade",tower:"OTC CM",vacations:[]},
+  {eid:"cristiane.s.martins",tower:"PTP",vacations:[]},
+  {eid:"daiane.c.oliveira",tower:"PTP",vacations:[["2025-10-06","2025-10-20"],["2026-05-06","2026-05-20"],["2026-10-13","2026-10-27"],["2027-03-03","2027-03-17"]]},
+  {eid:"diego.goncalves",tower:"OTC CM",vacations:[["2026-05-04","2026-05-18"],["2026-06-08","2026-06-17"],["2026-07-06","2026-07-10"]]},
+  {eid:"fabricio.gomes.silva",tower:"PTP",vacations:[["2026-01-12","2026-01-26"],["2026-03-18","2026-03-27"],["2026-05-11","2026-05-15"]]},
+  {eid:"fernando.r.lima",tower:"OTC Argentina",vacations:[["2026-11-09","2026-11-13"]]},
+  {eid:"g.andreoli",tower:"PTP",vacations:[["2025-12-22","2026-01-10"],["2026-02-02","2026-02-06"],["2026-06-22","2026-06-26"]]},
+  {eid:"isabel.vieira.wanick",tower:"OTC CM",vacations:[["2026-03-23","2026-04-06"],["2026-07-13","2026-07-22"],["2026-09-08","2026-09-12"]]},
+  {eid:"isabela.gomes.silva",tower:"Support",vacations:[["2025-09-29","2025-10-03"],["2026-06-16","2026-06-30"],["2026-11-23","2026-11-27"]]},
+  {eid:"izabella.de.a.gouvea",tower:"PTP",vacations:[["2026-09-14","2026-09-28"],["2027-03-15","2027-03-29"]]},
+  {eid:"jennifer.c.anacleto",tower:"PTP",vacations:[["2026-01-12","2026-01-26"],["2026-07-20","2026-07-29"],["2026-10-13","2026-10-17"]]},
+  {eid:"julia.mayse.teixeira",tower:"PTP",vacations:[["2026-08-03","2026-08-07"]]},
+  {eid:"k.santos.ferreira",tower:"OTC CM",vacations:[["2026-03-16","2026-03-30"],["2026-07-13","2026-07-17"],["2026-10-13","2026-10-22"]]},
+  {eid:"karoline.e.silva",tower:"OTC CM",vacations:[]},
+  {eid:"katiane.costa",tower:"OTC",vacations:[["2026-07-06","2026-07-10"],["2026-10-13","2026-10-22"],["2026-12-28","2027-01-11"]]},
+  {eid:"luciana.bispo.silva",tower:"OTC CM",vacations:[["2026-04-06","2026-04-15"],["2026-07-20","2026-07-24"],["2026-10-19","2026-11-02"]]},
+  {eid:"luiz.tavares.costa",tower:"PTP",vacations:[]},
+  {eid:"michelle.carvalho",tower:"RTR",vacations:[["2026-09-09","2026-09-23"]]},
+  {eid:"naomi.n.cerrada",tower:"OTC CM",vacations:[["2026-02-09","2026-02-18"],["2026-03-09","2026-03-13"],["2026-07-20","2026-08-03"]]},
+  {eid:"nohelia.k.maldonado",tower:"PTP",vacations:[]},
+  {eid:"noriangel.j.zamora",tower:"PTP",vacations:[["2026-06-08","2026-06-27"]]},
+  {eid:"patricia.c.carvalho",tower:"PTP",vacations:[["2026-01-19","2026-01-23"],["2026-05-13","2026-05-27"]]},
+  {eid:"suelleny.lopes.silva",tower:"OTC",vacations:[["2026-04-13","2026-04-17"],["2026-06-08","2026-06-17"],["2026-08-05","2026-08-19"]]},
+  {eid:"t.barbosa.muller",tower:"OTC CM",vacations:[]},
+  {eid:"thais.cristina.silva",tower:"OTC",vacations:[["2026-01-05","2026-01-09"],["2026-05-11","2026-05-25"],["2026-09-08","2026-09-22"]]},
+  {eid:"thamara.sousa.d.lima",tower:"OTC",vacations:[["2026-09-21","2026-09-25"],["2026-11-09","2026-11-18"],["2027-03-08","2027-03-22"]]},
+  {eid:"walerson.bonifacio",tower:"RTR",vacations:[]},
+  {eid:"yasmim.lage",tower:"OTC",vacations:[["2026-08-03","2026-09-01"]]},
+  {eid:"arthur.s.silva",tower:"Support",vacations:[]},
+];
+
+var DIEBOLD = [
+  {eid:"a.a.bittencourt",tower:"PTP",vacations:[["2026-04-16","2026-04-30"],["2026-07-20","2026-07-29"],["2026-10-26","2026-10-30"]]},
+  {eid:"a.de.oliveira.farah",tower:"OTC",vacations:[["2026-09-14","2026-09-28"]]},
+  {eid:"andreia.a.costa",tower:"PTP",vacations:[["2026-02-18","2026-02-27"],["2026-04-13","2026-04-27"],["2026-06-08","2026-06-12"]]},
+  {eid:"andressa.r.mendes",tower:"RTR",vacations:[["2026-07-13","2026-07-27"],["2026-08-10","2026-08-14"],["2027-04-12","2027-04-21"],["2027-06-14","2027-06-28"],["2027-07-19","2027-07-23"]]},
+  {eid:"barbara.prado",tower:"OTC Latam",vacations:[["2026-05-18","2026-05-22"],["2026-07-20","2026-07-29"],["2027-01-18","2027-02-01"]]},
+  {eid:"camilla.g.fernandes",tower:"Support",vacations:[]},
+  {eid:"cristopher.timoteu",tower:"OTC",vacations:[["2026-07-20","2026-08-03"],["2026-10-05","2026-10-09"]]},
+  {eid:"drielle.j.santos",tower:"PTP",vacations:[["2026-08-24","2026-08-28"],["2026-10-21","2026-10-30"],["2026-11-23","2026-12-02"],["2027-03-16","2027-03-30"]]},
+  {eid:"eduarda.c.simoes",tower:"OTC",vacations:[["2026-04-13","2026-04-17"],["2026-07-16","2026-07-30"]]},
+  {eid:"elaine.o.s.santos",tower:"OTC",vacations:[["2026-10-13","2026-10-27"],["2026-12-21","2027-01-04"]]},
+  {eid:"fernanda.a.couto",tower:"OTC",vacations:[["2026-04-22","2026-05-11"],["2026-06-10","2026-06-19"]]},
+  {eid:"flavio.h.santos",tower:"PTP",vacations:[["2026-10-13","2026-10-27"],["2026-11-23","2026-11-27"],["2027-01-11","2027-01-20"]]},
+  {eid:"francielle.rodrigues",tower:"RTR",vacations:[["2026-09-14","2026-09-28"],["2026-12-14","2026-12-18"]]},
+  {eid:"gabriela.alves",tower:"OTC Latam",vacations:[["2026-07-13","2026-07-22"],["2026-10-13","2026-11-01"]]},
+  {eid:"g.heronville.aurora",tower:"OTC Latam",vacations:[["2026-07-20","2026-07-29"],["2026-09-28","2026-10-12"]]},
+  {eid:"grazielle.nascimento",tower:"RTR",vacations:[["2026-12-14","2026-12-18"],["2027-03-08","2027-03-22"],["2027-04-14","2027-04-23"]]},
+  {eid:"guilherme.s.roberto",tower:"OTC",vacations:[["2026-09-28","2026-10-02"]]},
+  {eid:"isabel.c.aguiar",tower:"PTP",vacations:[["2026-12-14","2026-12-18"],["2027-03-15","2027-03-29"]]},
+  {eid:"isabela.gomes.silva",tower:"Support",vacations:[["2025-09-29","2025-10-03"],["2026-06-16","2026-06-30"],["2026-11-23","2026-11-27"]]},
+  {eid:"iury.h.cassimiro",tower:"OTC",vacations:[["2026-06-08","2026-06-12"],["2026-09-14","2026-09-28"]]},
+  {eid:"jaqueline.dos.santos",tower:"PTP",vacations:[["2026-03-16","2026-03-20"],["2026-08-12","2026-08-21"],["2026-09-14","2026-09-28"],["2027-03-08","2027-03-12"]]},
+  {eid:"jefferson.a.amorim",tower:"PTP",vacations:[["2026-11-04","2026-11-23"]]},
+  {eid:"jennifer.alves.silva",tower:"OTC",vacations:[]},
+  {eid:"jesssica.de.silva",tower:"PTP",vacations:[["2026-09-08","2026-09-22"],["2026-12-17","2026-12-31"]]},
+  {eid:"joshelin.k.valencia",tower:"OTC Latam",vacations:[]},
+  {eid:"k.de.souza.martins",tower:"RTR",vacations:[["2026-08-10","2026-08-24"],["2026-10-14","2026-10-23"],["2026-11-16","2026-11-20"]]},
+  {eid:"kelton.medeiros",tower:"OTC",vacations:[["2026-04-13","2026-04-17"],["2026-05-13","2026-05-27"]]},
+  {eid:"kenia.marques",tower:"OTC Latam",vacations:[["2026-07-20","2026-07-29"],["2026-10-13","2026-10-17"],["2027-01-04","2027-01-23"]]},
+  {eid:"lais.araujo.scarpati",tower:"PTP",vacations:[["2026-03-23","2026-03-27"],["2026-09-08","2026-09-22"]]},
+  {eid:"larissa.b.santos",tower:"RTR",vacations:[["2026-09-14","2026-09-18"]]},
+  {eid:"lina.tatiana.saldanha",tower:"OTC Latam",vacations:[["2026-09-03","2026-09-12"]]},
+  {eid:"lorena.albergaria",tower:"RTR",vacations:[["2026-07-15","2026-07-24"]]},
+  {eid:"lucas.g.fonseca",tower:"OTC",vacations:[]},
+  {eid:"lucas.marques.souza",tower:"PTP",vacations:[["2026-03-02","2026-03-20"],["2026-05-04","2026-05-14"]]},
+  {eid:"luisa.aranda",tower:"OTC Latam",vacations:[["2026-12-09","2026-12-23"],["2027-03-22","2027-03-27"]]},
+  {eid:"m.da.silva.machado",tower:"PTP",vacations:[["2026-10-22","2026-10-26"],["2027-01-11","2027-01-25"]]},
+  {eid:"mairon.o.nascimento",tower:"OTC",vacations:[["2026-10-13","2026-10-22"],["2027-01-04","2027-01-08"]]},
+  {eid:"marcela.v.jacinto",tower:"OTC Latam",vacations:[]},
+  {eid:"marcelle.c.terayama",tower:"RTR",vacations:[]},
+  {eid:"maria.laura.r.sousa",tower:"OTC",vacations:[["2025-09-08","2025-09-22"],["2026-01-19","2026-01-23"],["2026-05-11","2026-05-20"],["2026-10-19","2026-10-28"],["2027-05-17","2027-05-21"]]},
+  {eid:"marina.c.vieira",tower:"RTR",vacations:[]},
+  {eid:"marisol.a.torres",tower:"OTC Latam",vacations:[["2026-11-03","2026-11-15"]]},
+  {eid:"matheus.h.cardoso",tower:"Support",vacations:[]},
+  {eid:"milena.s.andrade",tower:"PTP",vacations:[]},
+  {eid:"michelle.p.romero",tower:"OTC Latam",vacations:[]},
+  {eid:"neyder.salgado.vale",tower:"RTR",vacations:[["2026-11-09","2026-11-23"],["2027-03-10","2027-03-19"]]},
+  {eid:"neliuska.m.pina",tower:"OTC Latam",vacations:[]},
+  {eid:"patricia.l.carvalho",tower:"PTP",vacations:[["2026-08-24","2026-08-28"]]},
+  {eid:"pedro.p.rodrigues",tower:"OTC",vacations:[]},
+  {eid:"priscila.f.oliveira",tower:"OTC Latam",vacations:[]},
+  {eid:"rafael.alves.guedes",tower:"OTC",vacations:[["2026-08-24","2026-08-28"],["2026-11-23","2026-12-02"],["2027-03-16","2027-03-30"]]},
+  {eid:"ruth.goncalves",tower:"OTC",vacations:[["2026-07-16","2026-07-30"]]},
+  {eid:"samuel.a.henriquez",tower:"OTC Latam",vacations:[]},
+  {eid:"andrea.sofia.g.leon",tower:"OTC Latam",vacations:[]},
+  {eid:"andrea.a.bracho",tower:"OTC Latam",vacations:[]},
+  {eid:"angie.pahola.bracho",tower:"OTC Latam",vacations:[["2026-12-22","2027-01-10"]]},
+  {eid:"anna.clara.de.gomes",tower:"OTC Latam",vacations:[]},
+  {eid:"bence.orgavan",tower:"OTC Latam",vacations:[]},
+  {eid:"camila.sobral.matos",tower:"OTC Latam",vacations:[["2026-07-13","2026-08-01"],["2026-11-24","2026-12-03"]]},
+  {eid:"cleber.marcos.silva",tower:"RTR",vacations:[["2026-10-13","2026-10-27"]]},
+  {eid:"elaine.batista.moura",tower:"RTR",vacations:[]},
+  {eid:"solange.m.pereira",tower:"RTR",vacations:[["2026-06-15","2026-06-29"],["2027-02-15","2027-02-19"]]},
+  {eid:"thamires.a.rodrigues",tower:"PTP",vacations:[["2026-05-18","2026-05-22"],["2026-10-13","2026-10-17"],["2027-01-04","2027-01-23"]]},
+  {eid:"thais.c.a.silva",tower:"Support",vacations:[]},
+  {eid:"thais.lima",tower:"RTR",vacations:[]},
+  {eid:"thais.ribeiro.lessa",tower:"OTC Latam",vacations:[]},
+  {eid:"v.de.souza.marques",tower:"OTC",vacations:[["2026-06-29","2026-07-13"],["2026-10-19","2026-11-02"]]},
+  {eid:"veridiane.duarte",tower:"PTP",vacations:[["2025-11-17","2025-12-01"],["2026-03-16","2026-03-25"],["2026-09-08","2026-09-12"]]},
+  {eid:"vinicius.lopes.padua",tower:"OTC",vacations:[["2026-10-13","2026-10-27"],["2026-11-23","2026-11-27"],["2027-05-17","2027-05-26"]]},
+  {eid:"wanessa.dagma.silva",tower:"OTC Latam",vacations:[["2026-10-21","2026-10-30"]]},
+  {eid:"ana.lima.ferreira",tower:"OTC",vacations:[["2026-10-19","2026-10-23"],["2026-12-21","2027-01-04"]]},
+  {eid:"sara.lima.ferreira",tower:"PTP",vacations:[["2026-12-09","2026-12-23"]]},
+  {eid:"leticia.g.oliveira",tower:"PTP",vacations:[["2026-09-14","2026-09-28"],["2026-11-23","2026-12-07"]]},
+  {eid:"ana.laura.r.oliveira",tower:"PTP",vacations:[["2026-10-05","2026-10-19"],["2026-12-21","2027-01-04"]]},
+];
+
+var TOWER_COLORS = {RTR:"#6366f1",PTP:"#10b981",OTC:"#f59e0b","OTC Latam":"#3b82f6","OTC Argentina":"#ec4899","OTC CM":"#14b8a6",Support:"#94a3b8"};
+var TOWERS_BY_PROJECT = {Daimler:["OTC","OTC CM","OTC Argentina","PTP","RTR","Support"],Diebold:["OTC","OTC Latam","RTR","PTP","Support"]};
+var MONTHS = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+var DAY_W=22,LBL_W=160;
+var project="Daimler",year=new Date().getFullYear(),month=new Date().getMonth(),tab="gantt",towerFilter="Todas";
+
+function pd(s){var p=s.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
+function fmtFull(s){var d=pd(s);return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();}
+function toKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function dBetween(a,b){return Math.round((pd(b)-pd(a))/86400000)+1;}
+function isWE(y,m,d){var w=new Date(y,m,d).getDay();return w===0||w===6;}
+function getDIM(y,m){return new Date(y,m+1,0).getDate();}
+function onVac(mb,y,m,d){var dt=new Date(y,m,d);for(var i=0;i<mb.vacations.length;i++){if(dt>=pd(mb.vacations[i][0])&&dt<=pd(mb.vacations[i][1]))return true;}return false;}
+function getMembers(){return project==="Daimler"?DAIMLER:DIEBOLD;}
+
+function getOverlaps(){
+  var by={},members=getMembers();
+  for(var mi=0;mi<members.length;mi++){var mb=members[mi];for(var vi=0;vi<mb.vacations.length;vi++){var s=pd(mb.vacations[vi][0]),e=pd(mb.vacations[vi][1]);for(var dt=new Date(s);dt<=e;dt.setDate(dt.getDate()+1)){var k=toKey(new Date(dt));if(!by[k])by[k]=[];by[k].push(mb.eid);}}}
+  var result=[];for(var key in by){if(by[key].length>=2)result.push({date:key,people:by[key]});}return result;
+}
+
+function getShown(){
+  var members=getMembers(),dim=getDIM(year,month),f=document.getElementById("filter-input").value.toLowerCase(),onlySched=document.getElementById("only-scheduled").checked,result=[];
+  for(var i=0;i<members.length;i++){var mb=members[i],matchText=mb.eid.toLowerCase().indexOf(f)>=0,matchTower=towerFilter==="Todas"||mb.tower===towerFilter,matchSched=true;
+    if(onlySched){matchSched=false;for(var d=1;d<=dim;d++){if(onVac(mb,year,month,d)){matchSched=true;break;}}}
+    if(matchText&&matchTower&&matchSched)result.push(mb);}return result;
+}
+
+function switchProject(p){
+  project=p;towerFilter="Todas";
+  document.getElementById("btn-daimler").style.background=p==="Daimler"?"#0ea5e9":"#e2e8f0";
+  document.getElementById("btn-daimler").style.color=p==="Daimler"?"#fff":"#64748b";
+  document.getElementById("btn-diebold").style.background=p==="Diebold"?"#f97316":"#e2e8f0";
+  document.getElementById("btn-diebold").style.color=p==="Diebold"?"#fff":"#64748b";
+  render();
+}
+
+function switchTab(t){
+  tab=t;
+  document.getElementById("gantt-view").style.display=t==="gantt"?"":"none";
+  document.getElementById("list-view").style.display=t==="list"?"":"none";
+  var accent=project==="Daimler"?"#0ea5e9":"#f97316";
+  ["gantt","list"].forEach(function(id){var btn=document.getElementById("tab-"+id);btn.style.color=id===t?accent:"#6b7280";btn.style.fontWeight=id===t?"700":"400";btn.style.borderBottom=id===t?"2px solid "+accent:"2px solid transparent";});
+}
+
+function setTower(t){towerFilter=t;render();}
+function setMonth(m){month=m;render();}
+function setYear(y){year=y;render();}
+function prevMonth(){if(month===0){month=11;year--;}else month--;render();}
+function nextMonth(){if(month===11){month=0;year++;}else month++;render();}
+function showTip(el,text){var t=document.getElementById("tooltip");t.style.display="block";t.textContent=text;el.onmousemove=function(e){t.style.left=(e.clientX+12)+"px";t.style.top=(e.clientY-10)+"px"};}
+function hideTip(){document.getElementById("tooltip").style.display="none";}
+
+function openExport(){
+  var members=getMembers(),rows=[["Enterprise ID","Torre","Parcela","Inicio","Fim","Dias"]];
+  for(var i=0;i<members.length;i++){var mb=members[i];if(mb.vacations.length===0){rows.push([mb.eid,mb.tower,"","","",""]);}else{for(var j=0;j<mb.vacations.length;j++){var v=mb.vacations[j];rows.push([mb.eid,mb.tower,j+1,fmtFull(v[0]),fmtFull(v[1]),dBetween(v[0],v[1])]);}}}
+  var lines=[];for(var i=0;i<rows.length;i++)lines.push(rows[i].join("\t"));
+  document.getElementById("export-text").value=lines.join("\n");
+  document.getElementById("export-modal").classList.add("open");
+}
+function closeExport(){document.getElementById("export-modal").classList.remove("open");}
+
+function render(){
+  var accent=project==="Daimler"?"#0ea5e9":"#f97316",accentLight=project==="Daimler"?"#e0f2fe":"#fff7ed";
+  var members=getMembers(),overlaps=getOverlaps(),shown=getShown(),overlapSet={},dim=getDIM(year,month),today=new Date();
+  for(var i=0;i<overlaps.length;i++)overlapSet[overlaps[i].date]=true;
+
+  document.getElementById("proj-label").textContent=project;
+  document.getElementById("proj-label").style.background=accent;
+  document.getElementById("proj-count").textContent=members.length;
+  var withVac=0;for(var i=0;i<members.length;i++)if(members[i].vacations.length>0)withVac++;
+  document.getElementById("proj-sub").textContent=withVac+" com ferias - "+overlaps.length+" dias em risco";
+
+  var towers=TOWERS_BY_PROJECT[project],legHTML="";
+  for(var i=0;i<towers.length;i++){var c=TOWER_COLORS[towers[i]]||"#94a3b8";legHTML+='<span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#374151"><span style="width:8px;height:8px;border-radius:2px;background:'+c+';display:inline-block"></span>'+towers[i]+'</span>';}
+  document.getElementById("legend").innerHTML=legHTML;
+
+  var presentTowers={};for(var i=0;i<members.length;i++)presentTowers[members[i].tower]=true;
+  var avail=["Todas"];for(var i=0;i<towers.length;i++)if(presentTowers[towers[i]])avail.push(towers[i]);
+  var pillHTML="";
+  for(var i=0;i<avail.length;i++){var t=avail[i],c=TOWER_COLORS[t]||"#94a3b8",active=towerFilter===t;pillHTML+='<button class="tower-pill" data-tower="'+t+'" onclick="setTower(this.dataset.tower)" style="border:1.5px solid '+(active?c:"#e5e7eb")+';background:'+(active?c:"#fff")+';color:'+(active?"#fff":c)+'">'+t+'</button>';}
+  document.getElementById("tower-pills").innerHTML=pillHTML;
+
+  var navHTML='<button class="nav-btn" onclick="prevMonth()">&#9664;</button>';
+  for(var i=0;i<MONTHS.length;i++)navHTML+='<button class="month-btn" onclick="setMonth('+i+')" style="'+(i===month?"background:"+accent+";color:#fff;":"")+'">' +MONTHS[i]+'</button>';
+  navHTML+='<button class="nav-btn" onclick="nextMonth()">&#9654;</button><span style="font-weight:800;font-size:12px;color:'+accent+';margin-left:4px;">'+year+'</span><button class="nav-btn" onclick="setYear('+(year-1)+')">&lsaquo;'+(year-1)+'</button><button class="nav-btn" onclick="setYear('+(year+1)+')">'+(year+1)+'&rsaquo;</button>';
+  document.getElementById("month-nav").innerHTML=navHTML;
+
+  switchTab(tab);
+
+  if(tab==="gantt"){
+    var html="";
+    if(overlaps.length>0)html+='<div class="risk-banner"><span style="color:#c2410c;font-weight:700;">&#9888; '+overlaps.length+' dia(s) com ausencias simultaneas</span></div>';
+    html+='<div class="gantt-wrap"><div style="min-width:'+(LBL_W+dim*DAY_W)+'px">';
+    html+='<div class="day-header" style="margin-left:'+LBL_W+'px">';
+    for(var d=1;d<=dim;d++){var wk=isWE(year,month,d),isTd=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===d,dk=year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),risk=overlapSet[dk]?true:false,dow=["D","S","T","Q","Q","S","S"][new Date(year,month,d).getDay()],bg=isTd?accentLight:(risk?"#fff7ed":(wk?"#fafafa":"#fff")),col=isTd?accent:(wk?"#d1d5db":"#6b7280"),bb=risk?"2px solid #fb923c":(isTd?"2px solid "+accent:"none");html+='<div class="day-cell" style="width:'+DAY_W+'px;color:'+col+';background:'+bg+';border-bottom:'+bb+'"><div style="font-size:8px;color:'+(wk?"#e5e7eb":"#d1d5db")+'">'+dow+'</div>'+d+'</div>';}
+    html+='</div>';
+
+    var towerList=towerFilter==="Todas"?[]:([towerFilter]);
+    if(towerFilter==="Todas"){var seen={};for(var i=0;i<shown.length;i++){if(!seen[shown[i].tower]){seen[shown[i].tower]=true;towerList.push(shown[i].tower);}}}
+
+    for(var ti=0;ti<towerList.length;ti++){
+      var tower=towerList[ti],group=[],tc=TOWER_COLORS[tower]||"#94a3b8";
+      for(var i=0;i<shown.length;i++)if(shown[i].tower===tower)group.push(shown[i]);
+      if(!group.length)continue;
+      html+='<div class="tower-hdr"><div style="width:'+LBL_W+'px;flex-shrink:0;padding-left:6px;display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:'+tc+'"></div><span style="font-weight:700;font-size:10px;color:'+tc+'">'+tower+'</span><span style="font-size:9px;color:#9ca3af">'+group.length+'</span></div><div style="flex:1;display:flex">';
+      for(var d=1;d<=dim;d++)html+='<div style="width:'+DAY_W+'px;flex-shrink:0;height:22px;border-left:1px solid #f0f0f0;background:'+(isWE(year,month,d)?"#f5f5f5":"#f8fafc")+'"></div>';
+      html+='</div></div>';
+
+      for(var gi=0;gi<group.length;gi++){
+        var mb=group[gi],segs=[],ss=null;
+        for(var d=1;d<=dim;d++){var on=onVac(mb,year,month,d),idx=d-1;if(on&&ss===null)ss=idx;if(!on&&ss!==null){segs.push({from:ss,to:idx-1});ss=null;}}
+        if(ss!==null)segs.push({from:ss,to:dim-1});
+        html+='<div class="member-row"><div class="member-label" style="width:'+LBL_W+'px"><div class="member-eid">'+mb.eid+'</div></div><div class="day-row">';
+        for(var d=1;d<=dim;d++){var wk=isWE(year,month,d),dk=year+"-"+String(month+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"),risk=overlapSet[dk]?true:false;html+='<div class="day-slot" style="width:'+DAY_W+'px;background:'+(risk?"rgba(251,146,60,0.07)":(wk?"#fafafa":"transparent"))+'"></div>';}
+        for(var si=0;si<segs.length;si++){
+          var seg=segs[si],vac=null,segDate=new Date(year,month,seg.from+1);
+          for(var vi=0;vi<mb.vacations.length;vi++){var vs=pd(mb.vacations[vi][0]),ve=pd(mb.vacations[vi][1]);if(segDate>=vs&&segDate<=ve){vac=mb.vacations[vi];break;}}
+          var lbl=vac?mb.eid+" ["+mb.tower+"]\n"+fmtFull(vac[0])+" > "+fmtFull(vac[1])+"\n"+dBetween(vac[0],vac[1])+" dias":mb.eid,w=(seg.to-seg.from+1)*DAY_W-2,left=seg.from*DAY_W+1;
+          html+='<div class="vac-bar" style="left:'+left+'px;width:'+w+'px;background:'+tc+';" onmouseenter="showTip(this,decodeURIComponent(this.dataset.lbl))" onmouseleave="hideTip()" data-lbl="'+encodeURIComponent(lbl)+'">'+(w>40?'<span class="vac-lbl">'+mb.eid.split(".")[0]+'</span>':'')+'</div>';
+        }
+        html+='</div></div>';
+      }
+    }
+    html+='<div class="counter-row" style="margin-left:'+LBL_W+'px">';
+    for(var d=1;d<=dim;d++){var cnt=0;for(var i=0;i<shown.length;i++)if(onVac(shown[i],year,month,d))cnt++;var col=cnt>=3?"#dc2626":(cnt===2?"#f97316":(cnt===1?"#2563eb":"#e5e7eb"));html+='<div class="counter-cell" style="width:'+DAY_W+'px;color:'+col+';background:'+(isWE(year,month,d)?"#fafafa":"transparent")+'">'+(cnt>0?cnt:"&middot;")+'</div>';}
+    html+='</div><div style="padding-left:'+LBL_W+'px;font-size:9px;color:#9ca3af;padding-top:2px;">Ausentes/dia &nbsp;<span style="color:#2563eb">&#9632;</span>1 <span style="color:#f97316">&#9632;</span>2 <span style="color:#dc2626">&#9632;</span>3+</div></div></div>';
+    document.getElementById("gantt-view").innerHTML=html;
+  }
+
+  if(tab==="list"){
+    var html="";
+    for(var i=0;i<shown.length;i++){var mb=shown[i],tc=TOWER_COLORS[mb.tower]||"#94a3b8";html+='<div class="list-item"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-weight:700;font-size:12px;color:#111827">'+mb.eid+'</span><span class="badge" style="background:'+tc+'">'+mb.tower+'</span></div>';if(mb.vacations.length===0){html+='<div style="font-size:10px;color:#d1d5db;margin-top:4px;font-style:italic">Sem ferias programadas</div>';}else{html+='<div style="margin-top:6px;">';for(var j=0;j<mb.vacations.length;j++){var v=mb.vacations[j];html+='<span class="vac-tag" style="border-color:'+tc+'">&#128197; '+fmtFull(v[0])+'&gt;'+fmtFull(v[1])+'<span style="color:#9ca3af">('+dBetween(v[0],v[1])+'d)</span></span>';}html+='</div>';}html+='</div>';}
+    if(overlaps.length>0){html+='<div style="margin-top:12px;"><div style="font-weight:700;font-size:12px;color:#b45309;margin-bottom:6px;">&#9888; Ausencias simultaneas</div>';var max=overlaps.length>40?40:overlaps.length;for(var i=0;i<max;i++)html+='<span class="overlap-tag"><b>'+fmtFull(overlaps[i].date)+'</b>: '+overlaps[i].people.join(", ")+'</span>';html+='</div>';}
+    document.getElementById("list-view").innerHTML=html;
+  }
+}
+render();
+</script>
+</body>
+</html>
